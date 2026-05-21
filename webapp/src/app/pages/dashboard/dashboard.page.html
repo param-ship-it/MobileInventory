@@ -1,0 +1,129 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>
+      <div class="toolbar-title">
+        <span class="brand">DeviceHub</span>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button id="notif-btn" fill="clear">
+        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+      </ion-button>
+      <ion-button id="logout-btn" fill="clear" (click)="logout()">
+        <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="chevron-down-outline" refreshingSpinner="crescent"></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="page-hero">
+    <h1>Good {{ greeting }}, {{ user?.fullName?.split(' ')?.[0] }}!</h1>
+    <p>{{ today | date:'EEEE, MMMM d' }} · {{ totals?.TOTAL || 0 }} devices total</p>
+  </div>
+
+  <!-- Stat Grid -->
+  <div class="stat-grid" *ngIf="!loading">
+    <div class="stat-card purple fade-in-up" (click)="nav('/devices')">
+      <div class="stat-icon">📱</div>
+      <div class="stat-value">{{ totals.TOTAL || 0 }}</div>
+      <div class="stat-label">Total Devices</div>
+    </div>
+    <div class="stat-card green fade-in-up delay-1" (click)="nav('/devices', {status:'AVAILABLE'})">
+      <div class="stat-icon">✅</div>
+      <div class="stat-value">{{ totals.AVAILABLE || 0 }}</div>
+      <div class="stat-label">Available</div>
+    </div>
+    <div class="stat-card blue fade-in-up delay-2" (click)="nav('/devices', {status:'ASSIGNED'})">
+      <div class="stat-icon">👤</div>
+      <div class="stat-value">{{ totals.ASSIGNED || 0 }}</div>
+      <div class="stat-label">Assigned</div>
+    </div>
+    <div class="stat-card orange fade-in-up delay-3" (click)="nav('/devices', {status:'IN_REPAIR'})">
+      <div class="stat-icon">🔧</div>
+      <div class="stat-value">{{ totals.IN_REPAIR || 0 }}</div>
+      <div class="stat-label">In Repair</div>
+    </div>
+    <div class="stat-card red fade-in-up delay-4" (click)="nav('/devices', {status:'LOST'})">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-value">{{ (totals.LOST || 0) + (totals.STOLEN || 0) }}</div>
+      <div class="stat-label">Lost / Stolen</div>
+    </div>
+    <div class="stat-card gray fade-in-up delay-4" (click)="nav('/devices', {status:'RETIRED'})">
+      <div class="stat-icon">🗄️</div>
+      <div class="stat-value">{{ totals.RETIRED || 0 }}</div>
+      <div class="stat-label">Retired</div>
+    </div>
+  </div>
+
+  <!-- Skeleton loading -->
+  <div class="stat-grid" *ngIf="loading">
+    <div class="stat-card purple" *ngFor="let i of [1,2,3,4,5,6]">
+      <div class="skeleton-line" style="width:40px;height:22px;margin-bottom:12px"></div>
+      <div class="skeleton-line" style="width:60px;height:28px;margin-bottom:8px"></div>
+      <div class="skeleton-line" style="width:80px;height:12px"></div>
+    </div>
+  </div>
+
+  <!-- Device by Make breakdown -->
+  <div class="section-header" *ngIf="makeBreakdown.length">
+    <h2>By Manufacturer</h2>
+  </div>
+  <div class="make-chips" *ngIf="makeBreakdown.length">
+    <div class="make-chip" *ngFor="let m of makeBreakdown">
+      <span class="make-name">{{ m.MAKE }}</span>
+      <span class="make-count">{{ m.CNT }}</span>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="section-header">
+    <h2>Recent Activity</h2>
+    <a (click)="nav('/reports')">View All</a>
+  </div>
+
+  <div class="activity-card glass-card" style="margin:0 16px 16px">
+    <div *ngIf="!activity.length && !loading" class="empty-activity">
+      <ion-icon name="time-outline"></ion-icon>
+      <p>No recent activity</p>
+    </div>
+    <div class="activity-item" *ngFor="let a of activity">
+      <div class="activity-dot" [ngClass]="getActivityClass(a.ACTION)"></div>
+      <div style="flex:1">
+        <div class="activity-text">
+          <strong>{{ a.MAKE }} {{ a.MODEL }}</strong>
+          <span class="activity-action">{{ formatAction(a.ACTION) }}</span>
+        </div>
+        <div class="activity-meta">{{ a.CHANGED_BY }} · {{ a.CHANGED_AT | date:'MMM d, h:mm a' }}</div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<!-- Tab Bar -->
+<ion-tab-bar slot="bottom">
+  <ion-tab-button id="tab-dashboard" tab="dashboard" (click)="nav('/dashboard')" class="tab-selected">
+    <ion-icon name="grid"></ion-icon>
+    <ion-label>Dashboard</ion-label>
+  </ion-tab-button>
+  <ion-tab-button id="tab-devices" tab="devices" (click)="nav('/devices')">
+    <ion-icon name="phone-portrait-outline"></ion-icon>
+    <ion-label>Devices</ion-label>
+  </ion-tab-button>
+  <ion-tab-button id="tab-scan" tab="scan" (click)="nav('/scan')">
+    <ion-icon name="scan-outline"></ion-icon>
+    <ion-label>Scan</ion-label>
+  </ion-tab-button>
+  <ion-tab-button id="tab-reports" tab="reports" (click)="nav('/reports')">
+    <ion-icon name="bar-chart-outline"></ion-icon>
+    <ion-label>Reports</ion-label>
+  </ion-tab-button>
+  <ion-tab-button id="tab-users" tab="users" (click)="nav('/users')" *ngIf="isAdmin">
+    <ion-icon name="people-outline"></ion-icon>
+    <ion-label>Users</ion-label>
+  </ion-tab-button>
+</ion-tab-bar>

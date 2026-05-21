@@ -1,0 +1,9 @@
+.scan-wrapper { display:flex; flex-direction:column; align-items:center; padding:24px 16px; }
+.scan-label { font-size:14px; color:var(--text-muted); text-align:center; margin-bottom:20px; }
+.scan-box { width:280px; height:280px; border-radius:16px; overflow:hidden; border:2px solid var(--ion-color-primary); box-shadow:0 0 0 9999px rgba(0,0,0,0.7), var(--shadow-glow-purple); position:relative;
+  zxing-scanner { width:100%; height:100%; }
+}
+.scan-result { display:flex; align-items:center; gap:10px; margin-top:24px; background:var(--bg-glass); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:12px 16px; width:100%; box-sizing:border-box;
+  span { flex:1; font-size:14px; font-family:'Courier New',monospace; color:var(--text-primary); }
+}
+.no-perm { color:var(--ion-color-danger); font-size:13px; text-align:center; margin-top:20px; }

@@ -1,0 +1,26 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/dashboard" text=""></ion-back-button></ion-buttons>
+    <ion-title>User Management</ion-title>
+    <ion-buttons slot="end">
+      <ion-button id="add-user-btn" fill="clear" (click)="openAddUser()"><ion-icon slot="icon-only" name="person-add-outline"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div *ngIf="loading" style="padding:20px">
+    <div class="skeleton-line" *ngFor="let i of [1,2,3,4,5]" style="height:60px;margin-bottom:10px;border-radius:12px"></div>
+  </div>
+  <div class="user-item glass-card fade-in-up" style="margin:12px 16px 0;padding:14px 16px" *ngFor="let u of users; let i = index" [id]="'user-item-' + i">
+    <div class="user-avatar">{{ u.FULL_NAME[0] }}</div>
+    <div style="flex:1">
+      <div style="font-weight:600;font-size:15px">{{ u.FULL_NAME }}</div>
+      <div style="font-size:12px;color:var(--text-muted)">{{ u.USERNAME }} · {{ u.EMAIL }}</div>
+    </div>
+    <div style="text-align:right">
+      <span class="role-badge {{ u.ROLE | lowercase }}">{{ u.ROLE }}</span>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px">{{ u.IS_ACTIVE ? '🟢 Active' : '🔴 Inactive' }}</div>
+    </div>
+  </div>
+  <div style="height:20px"></div>
+</ion-content>

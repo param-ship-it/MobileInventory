@@ -1,0 +1,81 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Devices</ion-title>
+    <ion-buttons slot="end">
+      <ion-button id="add-device-btn" (click)="nav('/devices/add')" fill="clear">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Search -->
+  <ion-searchbar id="device-search" [(ngModel)]="searchQuery" (ionInput)="onSearch()" placeholder="Search IMEI, Serial, Make..." debounce="400"></ion-searchbar>
+
+  <!-- Filter chips -->
+  <div class="filter-chips">
+    <ion-chip id="filter-all" [class.active-filter]="!activeFilter" (click)="setFilter(null)">All</ion-chip>
+    <ion-chip id="filter-available" [class.active-filter]="activeFilter==='AVAILABLE'" (click)="setFilter('AVAILABLE')">✅ Available</ion-chip>
+    <ion-chip id="filter-assigned" [class.active-filter]="activeFilter==='ASSIGNED'" (click)="setFilter('ASSIGNED')">👤 Assigned</ion-chip>
+    <ion-chip id="filter-repair" [class.active-filter]="activeFilter==='IN_REPAIR'" (click)="setFilter('IN_REPAIR')">🔧 In Repair</ion-chip>
+    <ion-chip id="filter-lost" [class.active-filter]="activeFilter==='LOST'" (click)="setFilter('LOST')">⚠️ Lost</ion-chip>
+    <ion-chip id="filter-retired" [class.active-filter]="activeFilter==='RETIRED'" (click)="setFilter('RETIRED')">🗄️ Retired</ion-chip>
+  </div>
+
+  <!-- Results count -->
+  <div class="results-count" *ngIf="!loading">
+    <span>{{ total }} device{{ total !== 1 ? 's' : '' }} found</span>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading">
+    <div class="device-item" *ngFor="let i of [1,2,3,4,5]">
+      <div style="width:44px;height:44px;border-radius:8px" class="skeleton-line"></div>
+      <div style="flex:1">
+        <div class="skeleton-line" style="width:60%;margin-bottom:6px"></div>
+        <div class="skeleton-line" style="width:40%;height:12px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Device List -->
+  <div *ngIf="!loading">
+    <div class="device-item fade-in-up" *ngFor="let d of devices; let i = index"
+         [id]="'device-item-' + i" [style.animation-delay]="i * 30 + 'ms'"
+         (click)="nav('/devices/' + d.DEVICE_ID)">
+      <div class="device-icon">{{ getMakeEmoji(d.MAKE) }}</div>
+      <div class="device-info">
+        <div class="device-name">{{ d.MAKE }} {{ d.MODEL }}<span *ngIf="d.COLOR"> · {{ d.COLOR }}</span></div>
+        <div class="device-imei">IMEI: {{ d.IMEI }}</div>
+        <div *ngIf="d.SERIAL_NUMBER" class="device-imei">S/N: {{ d.SERIAL_NUMBER }}</div>
+      </div>
+      <div class="device-right">
+        <span class="status-badge {{ d.STATUS | lowercase | replace:'_':'-' }}">{{ formatStatus(d.STATUS) }}</span>
+        <ion-icon name="chevron-forward-outline" style="color:var(--text-muted);font-size:16px;margin-top:6px"></ion-icon>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!devices.length">
+      <ion-icon name="phone-portrait-outline"></ion-icon>
+      <h3>No devices found</h3>
+      <p>Try adjusting your search or filters</p>
+      <ion-button fill="outline" (click)="nav('/devices/add')">Add First Device</ion-button>
+    </div>
+  </div>
+
+  <!-- Infinite scroll -->
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="devices.length >= total">
+    <ion-infinite-scroll-content loadingSpinner="crescent"></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
+
+<!-- FAB -->
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button id="fab-add-device" (click)="nav('/devices/add')">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

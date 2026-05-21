@@ -1,0 +1,105 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/devices" text=""></ion-back-button></ion-buttons>
+    <ion-title>Assign Device</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="device-mini-card glass-card" *ngIf="device">
+    <span class="device-emoji">📱</span>
+    <div>
+      <div style="font-weight:600">{{ device.MAKE }} {{ device.MODEL }}</div>
+      <div style="font-size:12px;color:var(--text-muted)">IMEI: {{ device.IMEI }}</div>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form-section">
+      <div class="section-label">Assignment Type</div>
+      <div class="type-selector">
+        <div class="type-btn" [class.active]="form.value.assignmentType === 'INDIVIDUAL'" (click)="setType('INDIVIDUAL')" id="type-individual">
+          <ion-icon name="person-outline"></ion-icon><span>Individual</span>
+        </div>
+        <div class="type-btn" [class.active]="form.value.assignmentType === 'PROGRAM'" (click)="setType('PROGRAM')" id="type-program">
+          <ion-icon name="business-outline"></ion-icon><span>Program</span>
+        </div>
+        <div class="type-btn" [class.active]="form.value.assignmentType === 'PROJECT'" (click)="setType('PROJECT')" id="type-project">
+          <ion-icon name="folder-outline"></ion-icon><span>Project</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section" *ngIf="form.value.assignmentType === 'INDIVIDUAL'">
+      <div class="section-label">Assign To (Individual)</div>
+      <div class="field-group">
+        <label>Search User</label>
+        <input id="user-search" type="text" [(ngModel)]="userSearch" [ngModelOptions]="{standalone:true}" (input)="searchUsers()" placeholder="Type name or username..." />
+        <div class="search-results" *ngIf="userResults.length">
+          <div class="search-result-item" *ngFor="let u of userResults" (click)="selectUser(u)">
+            <div class="avatar">{{ u.FULL_NAME[0] }}</div>
+            <div><div style="font-size:14px;font-weight:500">{{ u.FULL_NAME }}</div><div style="font-size:12px;color:var(--text-muted)">{{ u.USERNAME }}</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="selected-user" *ngIf="selectedUser" id="selected-user-card">
+        <ion-icon name="checkmark-circle" color="success"></ion-icon>
+        <div>{{ selectedUser.FULL_NAME }} · {{ selectedUser.USERNAME }}</div>
+        <ion-icon name="close-outline" (click)="clearUser()"></ion-icon>
+      </div>
+      <div class="field-group">
+        <label>Or enter name manually</label>
+        <input formControlName="assignedToName" id="field-assigned-to-name" type="text" placeholder="Full Name" />
+      </div>
+    </div>
+
+    <div class="form-section" *ngIf="form.value.assignmentType === 'PROGRAM'">
+      <div class="section-label">Assign To (Program)</div>
+      <div class="field-group">
+        <label>Program</label>
+        <select formControlName="programId" id="field-program">
+          <option value="">Select Program</option>
+          <option *ngFor="let p of programs" [value]="p.PROGRAM_ID">{{ p.NAME }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-section" *ngIf="form.value.assignmentType === 'PROJECT'">
+      <div class="section-label">Assign To (Project)</div>
+      <div class="field-group">
+        <label>Program</label>
+        <select (change)="onProgramChange($event)" id="field-project-program">
+          <option value="">Select Program</option>
+          <option *ngFor="let p of programs" [value]="p.PROGRAM_ID">{{ p.NAME }}</option>
+        </select>
+      </div>
+      <div class="field-group" *ngIf="projects.length">
+        <label>Project</label>
+        <select formControlName="projectId" id="field-project">
+          <option value="">Select Project</option>
+          <option *ngFor="let p of projects" [value]="p.PROJECT_ID">{{ p.NAME }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-label">Details</div>
+      <div class="field-group">
+        <label>Expected Return Date (optional)</label>
+        <input formControlName="expectedReturn" id="field-expected-return" type="date" />
+      </div>
+      <div class="field-group">
+        <label>Notes</label>
+        <textarea formControlName="notes" id="field-assign-notes" placeholder="Reason or notes..." rows="2"></textarea>
+      </div>
+    </div>
+
+    <div class="error-msg" *ngIf="errorMsg"><ion-icon name="alert-circle-outline"></ion-icon> {{ errorMsg }}</div>
+
+    <button type="submit" id="confirm-assign-btn" class="submit-btn" [disabled]="form.invalid || saving">
+      <ion-spinner *ngIf="saving" name="crescent"></ion-spinner>
+      <ion-icon *ngIf="!saving" name="checkmark-outline"></ion-icon>
+      <span>{{ saving ? 'Assigning...' : 'Confirm Assignment' }}</span>
+    </button>
+  </form>
+</ion-content>

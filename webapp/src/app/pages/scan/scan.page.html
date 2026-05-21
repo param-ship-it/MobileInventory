@@ -1,0 +1,21 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/dashboard" text=""></ion-back-button></ion-buttons>
+    <ion-title>Barcode Scanner</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="scan-wrapper">
+    <div class="scan-label">Point camera at IMEI or Serial Number barcode</div>
+    <div class="scan-box">
+      <zxing-scanner (scanSuccess)="onResult($event)" (permissionResponse)="onPermission($event)"></zxing-scanner>
+      <div class="scan-corners"></div>
+    </div>
+    <div class="scan-result" *ngIf="result">
+      <ion-icon name="checkmark-circle" color="success"></ion-icon>
+      <span>{{ result }}</span>
+      <ion-button fill="solid" size="small" (click)="useResult()">Use This</ion-button>
+    </div>
+    <p class="no-perm" *ngIf="permDenied">📷 Camera permission denied. Please allow camera access in your browser settings.</p>
+  </div>
+</ion-content>

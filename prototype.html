@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Inventory Prototype</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+  <style>
+    :root {
+      --ion-color-primary: #6b21a8;
+      --ion-color-primary-rgb: 107,33,168;
+      --ion-color-primary-contrast: #ffffff;
+      --ion-color-primary-contrast-rgb: 255,255,255;
+      --ion-color-primary-shade: #5e1d94;
+      --ion-color-primary-tint: #7a37b0;
+      
+      --ion-background-color: #121212;
+      --ion-text-color: #ffffff;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 16px;
+    }
+    
+    .stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    
+    .stat-card h2 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    
+    .stat-card p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      color: #a1a1aa;
+    }
+    
+    .purple-glow { border: 1px solid #a855f7; box-shadow: 0 0 15px rgba(168, 85, 247, 0.2); }
+    .blue-glow { border: 1px solid #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); }
+    .green-glow { border: 1px solid #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
+    .orange-glow { border: 1px solid #f59e0b; box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
+  </style>
+</head>
+<body>
+  <ion-app>
+    <ion-header class="ion-no-border">
+      <ion-toolbar color="dark">
+        <ion-title>Dashboard</ion-title>
+        <ion-buttons slot="end">
+          <ion-button>
+            <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content color="dark">
+      <div class="ion-padding">
+        <h2>Welcome, Admin!</h2>
+        <p style="color: #a1a1aa;">Here is your inventory overview.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card purple-glow">
+          <ion-icon name="phone-portrait-outline" style="color: #a855f7; font-size: 24px;"></ion-icon>
+          <h2>1,248</h2>
+          <p>Total Devices</p>
+        </div>
+        <div class="stat-card blue-glow">
+          <ion-icon name="cube-outline" style="color: #3b82f6; font-size: 24px;"></ion-icon>
+          <h2>876</h2>
+          <p>Available</p>
+        </div>
+        <div class="stat-card green-glow">
+          <ion-icon name="person-outline" style="color: #10b981; font-size: 24px;"></ion-icon>
+          <h2>312</h2>
+          <p>Assigned</p>
+        </div>
+        <div class="stat-card orange-glow">
+          <ion-icon name="construct-outline" style="color: #f59e0b; font-size: 24px;"></ion-icon>
+          <h2>60</h2>
+          <p>In Repair</p>
+        </div>
+      </div>
+
+      <ion-list-header>
+        <ion-label>Recent Activity</ion-label>
+      </ion-list-header>
+      <ion-list style="background: transparent;">
+        <ion-item style="--background: rgba(255,255,255,0.05); margin: 0 16px 8px; border-radius: 12px;">
+          <ion-icon name="phone-portrait-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h3>iPhone 13</h3>
+            <p>Assigned to Sarah J.</p>
+          </ion-label>
+          <ion-note slot="end">12:35 PM</ion-note>
+        </ion-item>
+        <ion-item style="--background: rgba(255,255,255,0.05); margin: 0 16px 8px; border-radius: 12px;">
+          <ion-icon name="tablet-portrait-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h3>iPad Pro</h3>
+            <p>Returned</p>
+          </ion-label>
+          <ion-note slot="end">11:15 AM</ion-note>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+
+    <ion-footer class="ion-no-border">
+      <ion-toolbar color="dark">
+        <ion-tabs>
+          <ion-tab-bar slot="bottom" color="dark">
+            <ion-tab-button tab="dashboard">
+              <ion-icon name="grid"></ion-icon>
+              <ion-label>Dashboard</ion-label>
+            </ion-tab-button>
+            <ion-tab-button tab="devices">
+              <ion-icon name="hardware-chip-outline"></ion-icon>
+              <ion-label>Devices</ion-label>
+            </ion-tab-button>
+            <ion-tab-button tab="users">
+              <ion-icon name="people-outline"></ion-icon>
+              <ion-label>Users</ion-label>
+            </ion-tab-button>
+          </ion-tab-bar>
+        </ion-tabs>
+      </ion-toolbar>
+    </ion-footer>
+  </ion-app>
+</body>
+</html>

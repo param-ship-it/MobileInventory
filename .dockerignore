@@ -1,0 +1,13 @@
+node_modules/
+server/public/
+server/node_modules/
+webapp/node_modules/
+webapp/.angular/
+webapp/dist/
+webapp/www/
+*.log
+.DS_Store
+Thumbs.db
+*.zip
+.env.local
+.env.prod

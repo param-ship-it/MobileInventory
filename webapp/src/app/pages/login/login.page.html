@@ -1,0 +1,34 @@
+<ion-content class="ion-padding">
+  <div class="login-wrapper">
+    <div class="login-hero">
+      <div class="logo-ring">
+        <ion-icon name="phone-portrait-outline"></ion-icon>
+      </div>
+      <h1>DeviceHub</h1>
+      <p>Mobile Inventory Management</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="login()" class="login-form">
+      <div class="input-group">
+        <ion-icon name="person-outline" class="input-icon"></ion-icon>
+        <input formControlName="username" type="text" placeholder="Username or Email" id="login-username" autocomplete="username" />
+      </div>
+      <div class="input-group">
+        <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+        <input formControlName="password" [type]="showPass ? 'text' : 'password'" placeholder="Password" id="login-password" autocomplete="current-password" />
+        <ion-icon [name]="showPass ? 'eye-off-outline' : 'eye-outline'" class="toggle-eye" (click)="showPass = !showPass"></ion-icon>
+      </div>
+
+      <div class="error-msg" *ngIf="errorMsg">
+        <ion-icon name="alert-circle-outline"></ion-icon> {{ errorMsg }}
+      </div>
+
+      <button type="submit" id="login-btn" [disabled]="loading || form.invalid" class="login-btn">
+        <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+        <span *ngIf="!loading">Sign In</span>
+      </button>
+    </form>
+
+    <p class="hint">Default: <strong>admin</strong> / <strong>Admin@123</strong></p>
+  </div>
+</ion-content>

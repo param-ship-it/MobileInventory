@@ -1,0 +1,128 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/devices" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Add Device</ion-title>
+    <ion-buttons slot="end">
+      <ion-button id="scan-imei-btn" fill="clear" (click)="openScanner('imei')">
+        <ion-icon slot="icon-only" name="scan-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Scanner overlay -->
+  <div class="scanner-overlay" *ngIf="scannerOpen" (click)="closeScanner()">
+    <div class="scanner-frame" (click)="$event.stopPropagation()">
+      <zxing-scanner [enable]="scannerOpen" (scanSuccess)="onScan($event)"></zxing-scanner>
+    </div>
+    <p style="color:white;margin-top:20px;font-size:14px">Point at barcode · Tap outside to close</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form-section">
+      <div class="section-label">📋 Identity</div>
+
+      <div class="field-group">
+        <label>IMEI Number *</label>
+        <div class="input-with-scan">
+          <input formControlName="imei" id="field-imei" type="text" placeholder="Enter or scan IMEI" inputmode="numeric" maxlength="20" />
+          <button type="button" class="scan-btn" (click)="openScanner('imei')">
+            <ion-icon name="scan-outline"></ion-icon>
+          </button>
+        </div>
+        <span class="field-hint">15-digit unique device identifier</span>
+      </div>
+
+      <div class="field-group">
+        <label>Serial Number</label>
+        <div class="input-with-scan">
+          <input formControlName="serialNumber" id="field-serial" type="text" placeholder="Enter or scan serial number" />
+          <button type="button" class="scan-btn" (click)="openScanner('serial')">
+            <ion-icon name="scan-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-label">📱 Device Info</div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label>Make *</label>
+          <select formControlName="make" id="field-make">
+            <option value="">Select Make</option>
+            <option *ngFor="let m of makes" [value]="m">{{ m }}</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Model *</label>
+          <input formControlName="model" id="field-model" type="text" placeholder="e.g. iPhone 15 Pro" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label>Color</label>
+          <input formControlName="color" id="field-color" type="text" placeholder="e.g. Space Black" />
+        </div>
+        <div class="field-group">
+          <label>Storage</label>
+          <select formControlName="storage" id="field-storage">
+            <option value="">Select</option>
+            <option>32GB</option><option>64GB</option><option>128GB</option>
+            <option>256GB</option><option>512GB</option><option>1TB</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label>OS Type</label>
+          <select formControlName="osType" id="field-os-type">
+            <option value="">Select</option>
+            <option>iOS</option><option>Android</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>OS Version</label>
+          <input formControlName="osVersion" id="field-os-version" type="text" placeholder="e.g. iOS 17.2" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-label">📅 Dates</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>Purchase Date</label>
+          <input formControlName="purchaseDate" id="field-purchase-date" type="date" />
+        </div>
+        <div class="field-group">
+          <label>Warranty Expiry</label>
+          <input formControlName="warrantyDate" id="field-warranty-date" type="date" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-label">📝 Notes</div>
+      <div class="field-group">
+        <textarea formControlName="notes" id="field-notes" placeholder="Additional notes about this device..." rows="3"></textarea>
+      </div>
+    </div>
+
+    <div class="error-msg" *ngIf="errorMsg">
+      <ion-icon name="alert-circle-outline"></ion-icon> {{ errorMsg }}
+    </div>
+
+    <button type="submit" id="submit-device-btn" class="submit-btn" [disabled]="form.invalid || saving">
+      <ion-spinner *ngIf="saving" name="crescent"></ion-spinner>
+      <ion-icon *ngIf="!saving" name="checkmark-outline"></ion-icon>
+      <span>{{ saving ? 'Saving...' : 'Add Device' }}</span>
+    </button>
+  </form>
+</ion-content>

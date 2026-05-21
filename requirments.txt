@@ -1,0 +1,87 @@
+Mobile Device Inventory Management Application
+1. Objective
+To design and develop a mobile application that enables centralized management of mobile device inventory, allowing teams to efficiently track, assign, and manage devices across programs, projects, and individuals.
+2. Business Problem / Opportunity
+Currently, device inventory is:
+Fragmented across spreadsheets or manual tracking
+Lacking real-time visibility
+Difficult to trace ownership and status
+This creates:
+Risk of device loss/misallocation
+Inefficient auditing and reporting
+Lack of accountability across teams
+3. Scope
+In Scope
+Device inventory tracking
+Assignment to:
+Programs
+Projects
+Individuals
+Device lifecycle tracking
+Status management
+Out of Scope (Phase 1)
+Procurement workflows
+Financial tracking / depreciation
+Integration with external asset systems (future phase)
+4. Key Business Capabilities
+4.1 Device Inventory Management
+The system shall allow users to:
+Create and maintain device records
+Store key device attributes:
+Device Make (e.g., Apple, Samsung)
+Model
+Color
+IMEI Number
+Serial Number
+Operating System (optional enhancement)
+4.2 Assignment Management
+The system shall enable:
+Assignment of devices to:
+Program
+Project
+Individual (user/employee)
+Capture assignment details:
+Assigned To (name/ID)
+Assigned Date
+Assigned By
+Assignment Type (Program / Project / Individual)
+4.3 Device Status Management
+The system shall track device lifecycle status, including:
+Available
+Assigned
+In Repair
+Lost / Stolen
+Retired / Decommissioned
+Users shall be able to:
+Update device status
+View current and historical status
+4.4 Search & Tracking
+The system shall allow:
+Search by:
+IMEI / Serial Number
+User
+Program / Project
+View device history including:
+Previous assignments
+Status changes
+4.5 Reporting & Dashboard
+The application shall provide:
+Inventory summary (total devices by status)
+Devices assigned by:
+Program
+Project
+User
+Aging reports (e.g., devices assigned over X days)
+Availability report (free devices)
+5. User Roles
+Role	Description
+Admin	Manage inventory, assign devices, update status
+Program/Project Manager	View and track devices under their scope
+User/Employee	View assigned devices
+6. Functional Requirements (High-Level)
+System shall allow creation and update of device records
+System shall enforce unique identifiers (IMEI / Serial Number) If Possible Scan Barcode with Camera or OCR
+System shall allow assigning/unassigning devices
+System shall maintain audit trail of changes
+System shall provide real-time visibility of inventory
+System shall support mobile-friendly interface (iOS/Android or web-based mobile)

@@ -1,0 +1,173 @@
+---
+# ═══════════════════════════════════════════════════════════════
+#  DeviceHub — OpenShift Deployment
+#  Apply with: oc apply -f openshift-deploy.yaml
+#
+#  Before applying, update the Secret below with real DB credentials
+#  or set them via: oc create secret generic devicehub-secret ...
+# ═══════════════════════════════════════════════════════════════
+
+# ── 1. Secret — Oracle DB + JWT credentials ───────────────────
+apiVersion: v1
+kind: Secret
+metadata:
+  name: devicehub-secret
+  labels:
+    app: devicehub
+type: Opaque
+stringData:
+  DB_USER: diagram_user
+  DB_PASSWORD: diagram_pass
+  # Update this to your Oracle host/SID visible from OpenShift
+  # Format: host:port/service_name  OR  host:port:SID
+  DB_CONNECT_STRING: "your-oracle-host:1521/XE"
+  JWT_SECRET: "inventory_jwt_super_secret_change_me_in_prod"
+  JWT_EXPIRES_IN: "8h"
+  NODE_ENV: "production"
+
+---
+# ── 2. ImageStream — tracks the built image ───────────────────
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: devicehub
+  labels:
+    app: devicehub
+
+---
+# ── 3. BuildConfig — builds Docker image from local source ────
+#  Run: oc start-build devicehub --from-dir=. --follow
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: devicehub
+  labels:
+    app: devicehub
+spec:
+  source:
+    type: Binary
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: devicehub:latest
+
+---
+# ── 4. Deployment ─────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devicehub
+  labels:
+    app: devicehub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devicehub
+  template:
+    metadata:
+      labels:
+        app: devicehub
+    spec:
+      containers:
+        - name: devicehub
+          image: image-registry.openshift-image-registry.svc:5000/YOUR_PROJECT/devicehub:latest
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          env:
+            - name: PORT
+              value: "3000"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: devicehub-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: devicehub-secret
+                  key: DB_PASSWORD
+            - name: DB_CONNECT_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: devicehub-secret
+                  key: DB_CONNECT_STRING
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: devicehub-secret
+                  key: JWT_SECRET
+            - name: JWT_EXPIRES_IN
+              valueFrom:
+                secretKeyRef:
+                  name: devicehub-secret
+                  key: JWT_EXPIRES_IN
+            - name: NODE_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: devicehub-secret
+                  key: NODE_ENV
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+      # OpenShift runs pods with random UIDs — this is safe
+      securityContext: {}
+
+---
+# ── 5. Service ────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: devicehub
+  labels:
+    app: devicehub
+spec:
+  selector:
+    app: devicehub
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+      protocol: TCP
+
+---
+# ── 6. Route — public URL ─────────────────────────────────────
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: devicehub
+  labels:
+    app: devicehub
+spec:
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  to:
+    kind: Service
+    name: devicehub
+    weight: 100
