@@ -16,8 +16,8 @@ import { AuthService } from '../../services/auth';
 })
 export class LoginPage implements OnInit {
   form = this.fb.group({
-    username: ['', Validators.required],
-    password: ['', Validators.required]
+    username: ['admin', Validators.required],
+    password: ['Admin@123', Validators.required]
   });
   loading = false;
   errorMsg = '';
