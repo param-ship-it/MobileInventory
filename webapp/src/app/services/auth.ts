@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
@@ -20,7 +20,7 @@ export class AuthService {
 
   user$ = this.userSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private ngZone: NgZone) {}
 
   get storedUser(): User | null {
     const raw = localStorage.getItem(this.USER_KEY);
@@ -51,6 +51,6 @@ export class AuthService {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.userSubject.next(null);
-    this.router.navigate(['/login']);
+    this.ngZone.run(() => this.router.navigate(['/login']));
   }
 }

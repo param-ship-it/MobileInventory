@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -36,7 +36,13 @@ export class AddDevicePage {
     purchaseDate: [''], warrantyDate: [''], notes: ['']
   });
 
-  constructor(private fb: FormBuilder, private deviceSvc: DeviceService, private router: Router, private toast: ToastController) {
+  constructor(
+    private fb: FormBuilder,
+    private deviceSvc: DeviceService,
+    private router: Router,
+    private toast: ToastController,
+    private ngZone: NgZone
+  ) {
     addIcons({ scanOutline, checkmarkOutline });
   }
 
@@ -50,12 +56,15 @@ export class AddDevicePage {
 
   async submit() {
     if (this.form.invalid) return;
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     this.saving = true; this.errorMsg = '';
     this.deviceSvc.createDevice(this.form.value).subscribe({
       next: async () => {
         const t = await this.toast.create({ message: '✅ Device added!', duration: 2500, color: 'success' });
         t.present();
-        this.router.navigate(['/devices']);
+        this.ngZone.run(() => this.router.navigate(['/devices']));
       },
       error: (e) => { this.errorMsg = e.error?.error || 'Failed to add device'; this.saving = false; }
     });

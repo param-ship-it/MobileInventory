@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonIcon, IonContent, IonButton } from '@ionic/angular/standalone';
@@ -16,8 +16,10 @@ import { checkmarkCircle } from 'ionicons/icons';
 export class ScanPage {
   result = '';
   permDenied = false;
-  constructor(private router: Router) { addIcons({ checkmarkCircle }); }
+  constructor(private router: Router, private ngZone: NgZone) { addIcons({ checkmarkCircle }); }
   onResult(r: string) { this.result = r; }
   onPermission(p: boolean) { this.permDenied = !p; }
-  useResult() { this.router.navigate(['/devices/add'], { queryParams: { imei: this.result } }); }
+  useResult() {
+    this.ngZone.run(() => this.router.navigate(['/devices/add'], { queryParams: { imei: this.result } }));
+  }
 }

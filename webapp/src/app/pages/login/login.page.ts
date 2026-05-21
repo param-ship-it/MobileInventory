@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -23,21 +23,34 @@ export class LoginPage implements OnInit {
   errorMsg = '';
   showPass = false;
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router,
+    private ngZone: NgZone
+  ) {
     addIcons({ personOutline, lockClosedOutline, eyeOutline, eyeOffOutline, alertCircleOutline, phonePortraitOutline });
   }
 
   ngOnInit() {
-    if (this.auth.isLoggedIn()) this.router.navigate(['/dashboard']);
+    if (this.auth.isLoggedIn()) {
+      this.ngZone.run(() => this.router.navigate(['/dashboard']));
+    }
   }
 
   login() {
     if (this.form.invalid) return;
+    
+    // Remove focus from the button before disabling it to prevent focus hangs
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
     this.loading = true;
     this.errorMsg = '';
     const { username, password } = this.form.value;
     this.auth.login(username!, password!).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => this.ngZone.run(() => this.router.navigate(['/dashboard'])),
       error: (e) => { this.errorMsg = e.error?.error || 'Login failed'; this.loading = false; }
     });
   }

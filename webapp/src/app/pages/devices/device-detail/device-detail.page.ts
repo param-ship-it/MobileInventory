@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -35,7 +35,8 @@ export class DeviceDetailPage implements OnInit {
   constructor(
     private route: ActivatedRoute, private router: Router,
     private deviceSvc: DeviceService, private auth: AuthService,
-    private actionSheet: ActionSheetController, private alert: AlertController, private toast: ToastController
+    private actionSheet: ActionSheetController, private alert: AlertController, private toast: ToastController,
+    private ngZone: NgZone
   ) {
     addIcons({ ellipsisVertical, personAddOutline, createOutline, trashOutline, checkmarkCircle });
   }
@@ -53,7 +54,9 @@ export class DeviceDetailPage implements OnInit {
     });
   }
 
-  nav(path: string) { this.router.navigate([path]); }
+  nav(path: string) {
+    this.ngZone.run(() => this.router.navigate([path]));
+  }
 
   async openActions() {
     const sheet = await this.actionSheet.create({
@@ -87,7 +90,7 @@ export class DeviceDetailPage implements OnInit {
       buttons: [
         { text: 'Cancel', role: 'cancel' },
         { text: 'Retire', role: 'destructive', handler: () => {
-            this.deviceSvc.retireDevice(this.id).subscribe({ next: () => this.router.navigate(['/devices']) });
+            this.deviceSvc.retireDevice(this.id).subscribe({ next: () => this.nav('/devices') });
         }}
       ]
     });

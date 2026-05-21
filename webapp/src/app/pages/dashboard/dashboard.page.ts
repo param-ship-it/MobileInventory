@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import {
@@ -9,7 +9,7 @@ import {
 import { addIcons } from 'ionicons';
 import {
   notificationsOutline, logOutOutline, grid, phonePortraitOutline,
-  scanOutline, barChartOutline, peopleOutline, timeOutline
+  scanOutline, barChartOutline, peopleOutline, timeOutline, chevronDownOutline
 } from 'ionicons/icons';
 import { AuthService, User } from '../../services/auth';
 import { ReportService } from '../../services/report';
@@ -43,8 +43,13 @@ export class DashboardPage implements OnInit {
 
   get isAdmin(): boolean { return this.auth.hasRole('ADMIN'); }
 
-  constructor(private auth: AuthService, private reports: ReportService, private router: Router) {
-    addIcons({ notificationsOutline, logOutOutline, grid, phonePortraitOutline, scanOutline, barChartOutline, peopleOutline, timeOutline });
+  constructor(
+    private auth: AuthService,
+    private reports: ReportService,
+    private router: Router,
+    private ngZone: NgZone
+  ) {
+    addIcons({ notificationsOutline, logOutOutline, grid, phonePortraitOutline, scanOutline, barChartOutline, peopleOutline, timeOutline, chevronDownOutline });
   }
 
   ngOnInit() {
@@ -77,7 +82,9 @@ export class DashboardPage implements OnInit {
     });
   }
 
-  nav(path: string, queryParams?: any) { this.router.navigate([path], { queryParams }); }
+  nav(path: string, queryParams?: any) {
+    this.ngZone.run(() => this.router.navigate([path], { queryParams }));
+  }
   logout() { this.auth.logout(); }
 
   getActivityClass(action: string): string {

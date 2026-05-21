@@ -16,13 +16,17 @@ const { initTables } = require('./db/init');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: process.env.CORS_ORIGIN || '*', methods: ['GET', 'POST'] }
+  cors: { 
+    origin: (origin, callback) => callback(null, true), 
+    methods: ['GET', 'POST'], 
+    credentials: true 
+  }
 });
 
 // ── Security & Middleware ──────────────────────────────────────────────────
 app.use(helmet({ contentSecurityPolicy: false })); // CSP disabled — SPA serves its own
 app.use(compression());
-app.use(cors({ origin: process.env.CORS_ORIGIN || '*', credentials: true }));
+app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: true }));
 app.use(express.json({ limit: '5mb' }));
 app.use(morgan('dev'));
 

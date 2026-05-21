@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { CommonModule, TitleCasePipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,7 +8,7 @@ import {
   IonFab, IonFabButton, IonSpinner
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addOutline, chevronForwardOutline } from 'ionicons/icons';
+import { addOutline, chevronForwardOutline, phonePortraitOutline } from 'ionicons/icons';
 import { DeviceService } from '../../../services/device';
 import { ReplacePipe } from '../../../pipes/replace.pipe';
 
@@ -33,8 +33,13 @@ export class DeviceListPage implements OnInit {
   searchQuery = '';
   activeFilter: string | null = null;
 
-  constructor(private deviceSvc: DeviceService, private router: Router, private route: ActivatedRoute) {
-    addIcons({ addOutline, chevronForwardOutline });
+  constructor(
+    private deviceSvc: DeviceService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private ngZone: NgZone
+  ) {
+    addIcons({ addOutline, chevronForwardOutline, phonePortraitOutline });
   }
 
   ngOnInit() {
@@ -64,7 +69,9 @@ export class DeviceListPage implements OnInit {
     });
   }
 
-  nav(path: string) { this.router.navigate([path]); }
+  nav(path: string) {
+    this.ngZone.run(() => this.router.navigate([path]));
+  }
 
   getMakeEmoji(make: string): string {
     const map: any = { apple: '🍎', samsung: '📱', google: '🔵', xiaomi: '📲', oneplus: '🔴', lg: '📟', motorola: '📡', huawei: '🔶' };

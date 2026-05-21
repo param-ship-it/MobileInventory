@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -41,7 +41,14 @@ export class AssignDevicePage implements OnInit {
     notes: ['']
   });
 
-  constructor(private fb: FormBuilder, private route: ActivatedRoute, private router: Router, private deviceSvc: DeviceService, private toast: ToastController) {
+  constructor(
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+    private router: Router,
+    private deviceSvc: DeviceService,
+    private toast: ToastController,
+    private ngZone: NgZone
+  ) {
     addIcons({ personOutline, businessOutline, folderOutline, checkmarkOutline, alertCircleOutline, checkmarkCircle, closeOutline });
   }
 
@@ -67,6 +74,9 @@ export class AssignDevicePage implements OnInit {
   }
 
   async submit() {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     this.saving = true; this.errorMsg = '';
     const payload = {
       deviceId: this.deviceId, ...this.form.value,
@@ -77,7 +87,7 @@ export class AssignDevicePage implements OnInit {
       next: async () => {
         const t = await this.toast.create({ message: '✅ Device assigned!', duration: 2500, color: 'success' });
         t.present();
-        this.router.navigate(['/devices', this.deviceId]);
+        this.ngZone.run(() => this.router.navigate(['/devices', this.deviceId]));
       },
       error: (e) => { this.errorMsg = e.error?.error || 'Assignment failed'; this.saving = false; }
     });
