@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.angular/
+.DS_Store
+*.log
+.env.local
+server/public/*
+!server/public/assets/
+/MobileInventory-poc-secure.zip
+/MobileInventory-poc.zip
+/MobileInventory-no-sh.zip
+/MobileInventory-base64.txt
+/data.dat
